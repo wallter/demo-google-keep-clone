@@ -15,11 +15,18 @@
     "autoprefixer": "10.4.15",
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.19",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "next": "13.4.19",
+    "pocketbase": "^0.18.0",
     "postcss": "8.4.29",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-use": "^17.4.0",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.198"
   }
 }

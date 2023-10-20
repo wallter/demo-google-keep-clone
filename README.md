@@ -1,3 +1,27 @@
+# Notes App
+
+## Local Dev Env
+
+### [Pocketbase](https://github.com/pocketbase/pocketbase)
+
+PocketBase is an open source Go backend, consisting of:
+- embedded database (SQLite) with realtime subscriptions
+- built-in files and users management
+- convenient Admin dashboard UI
+- and simple REST-ish API
+
+### How to Run:
+*Mac Notes: Must enable in settings > security (unknown developer)
+
+```sh
+# Run the included standalone executable
+$ ./pocketbase serve
+Server started at http://127.0.0.1:8090
+├─ REST API: http://127.0.0.1:8090/api/
+└─ Admin UI: http://127.0.0.1:8090/_/
+```
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

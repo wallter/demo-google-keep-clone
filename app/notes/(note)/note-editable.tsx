@@ -9,6 +9,6 @@ export default function NoteEditable({ note }: any) {
     }
 
     return (
-        <Note note={note} onInput={updateNote} />
+        <Note note={note} onUpdate={updateNote} />
     )
 }

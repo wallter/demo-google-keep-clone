@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Footer from './footer'
 import { useClickAway, useDebounce, useUpdateEffect } from 'react-use';
 import { NoteType } from './types';
@@ -13,36 +13,45 @@ export interface NoteEventProps {
 interface NoteProps {
     note: NoteType;
     creating?: boolean;
-    onInput?: (noteValues: NoteEventProps) => Promise<void>;
+    onUpdate?: (noteValues: NoteEventProps) => Promise<void>;
     onBlur?: (noteValues: NoteEventProps) => Promise<void>;
 }
-
-const inputClasses = "bg-transparent"
 
 export default function Note({ 
     note, 
     creating = false, // default to false if not provided
-    onInput, 
+    onUpdate, 
     onBlur 
 }: NoteProps) {
     const componentRef = useRef(null)
 
-    const [title, setTitle] = useState(note.title)
-    const [content, setContent] = useState(note.content)
+    const [title, setTitle] = useState<string>(note.title || '')
+    const [content, setContent] = useState<string>(note.content || '')
     const [updated, setUpdated] = useState(note.updated)
 
     const noteValues: NoteEventProps = { title, content }
 
     /**
-     * react-use@useDebounce handles the onInput event for us to account for focus and edits
+     * react-use@useUpdateEffect handles updating the component state when the ref for
+     * the props.note changes (ie the new note has been saved)
+     */
+    useUpdateEffect(() => {
+        setTitle(note.title || '')
+        setContent(note.content || '')
+        setUpdated(note.updated)
+    }, [note])
+
+    /**
+     * react-use@useDebounce handles the onUpdate event for us to account for focus and edits
      * between the multiple contentEditable elements within the component applying a debounce
-     * to the onInput event(s) to prevent excessive calls to the onInput handler.
+     * to the onUpdate event(s) to prevent excessive calls to the onUpdate handler.
      */
     useDebounce(async () => {
-        if (!onInput) return
+        // don't fire onUpdated events for New notes
+        if (!onUpdate) return
         if (noteValues.title === note.title && noteValues.content === note.content) return
         
-        await onInput(noteValues)
+        await onUpdate(noteValues)
         
         setUpdated(new Date())
     }, 300, [noteValues, creating])
@@ -62,20 +71,19 @@ export default function Note({
             <div className="rounded overflow-hidden shadow-lg bg-yellow-300 dark:bg-yellow-600 hover:bg-yellow-400" data-note-id={note.id}>
                 <div className="px-6 py-4 flex flex-col">
                     <input 
-                        className={`font-bold text-xl mb-2 dark:text-zinc-800 ${inputClasses}`} 
-                        suppressContentEditableWarning
+                        className={`font-bold text-xl mb-2 dark:text-zinc-800 bg-transparent placeholder-zinc-700`} 
                         aria-label="Title"
-                        onChange={(e) => setTitle(e.currentTarget.textContent || '')}
+                        placeholder="Title"
+                        onChange={(e) => setTitle(e.target.value || '')}
                         value={title}
                     />
                     <input 
-                        className={`placeholder text-gray-700 text-base ${inputClasses}`}
-                        contentEditable
-                        suppressContentEditableWarning
+                        className={`text-gray-700 text-base bg-transparent placeholder-gray-600`}
                         aria-label="Content"
+                        placeholder="Take a note…"
                         tabIndex={creating ? 0 : -1}
                         role="textbox"
-                        onChange={(e) => setContent(e.currentTarget.textContent || '')}
+                        onChange={(e) => setContent(e.target.value || '')}
                         value={content}
                     />
                 </div>

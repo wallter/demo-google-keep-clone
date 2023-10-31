@@ -1,9 +1,7 @@
 export interface NoteType {
     id?: undefined;
-    title: string;
-    content: string;
-    image: string;
-    sort?: undefined;
+    title?: string;
+    content?: string;
     updated?: Date;
     created?: Date;
 }

@@ -5,7 +5,7 @@ import Note, { NoteEventProps } from "./note"
 import pocketBase from "@/app/(pocketbase)/pocketbase";
 import { NoteType } from "./types";
 
-// an empty object that could be filled with defaults 🤷‍♂️
+// an empty object that could be filled with defaults 🤷‍♂️ (like a sort order or from the clipboard)
 const initalNote: NoteType = {}
 
 interface NoteNewProps {
@@ -15,24 +15,18 @@ interface NoteNewProps {
 export default function NoteNew({ onCreate }: NoteNewProps) {
     const [note, setNote] = useState({...initalNote})
 
-    console.log('NoteNew', {...note})
-
     const updateNote = async ({ title, content}: NoteEventProps) => {
-        setNote({...note, title, content})
+        setNote({title, content})
     }
 
     const createNote = async (newNote: any) => {
         if (!newNote.title && !newNote.content) return
-
-        console.log("Creating note", { newNote })
 
         const createdNote = await pocketBase.collection('notes').create(newNote)
 
         if (onCreate) {
             await onCreate()
         }
-        
-        console.log('Created note', { createdNote })
 
         setNote({...initalNote})
     }

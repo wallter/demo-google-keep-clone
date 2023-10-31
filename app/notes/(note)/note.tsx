@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Footer from './footer'
 import { useClickAway, useDebounce, useUpdateEffect } from 'react-use';
 import { NoteType } from './types';
@@ -13,8 +13,8 @@ export interface NoteEventProps {
 interface NoteProps {
     note: NoteType;
     creating?: boolean;
-    onUpdate?: (noteValues: NoteEventProps) => Promise<void>;
-    onBlur?: (noteValues: NoteEventProps) => Promise<void>;
+    onUpdate?: (noteValues: NoteType) => Promise<void>;
+    onBlur?: (noteValues: NoteType) => Promise<void>;
 }
 
 export default function Note({ 
@@ -25,20 +25,23 @@ export default function Note({
 }: NoteProps) {
     const componentRef = useRef(null)
 
-    const [title, setTitle] = useState<string>(note.title || '')
-    const [content, setContent] = useState<string>(note.content || '')
-    const [updated, setUpdated] = useState(note.updated)
-
-    const noteValues: NoteEventProps = { title, content }
+    const [noteValues, setNoteValues] = useState<NoteType>({
+        title: note.title || '',
+        content: note.content || '',
+        updated: note.updated
+    });
 
     /**
      * react-use@useUpdateEffect handles updating the component state when the ref for
      * the props.note changes (ie the new note has been saved)
      */
     useUpdateEffect(() => {
-        setTitle(note.title || '')
-        setContent(note.content || '')
-        setUpdated(note.updated)
+        console.log('note Changed', {...note})
+        setNoteValues({
+            title: note.title || '',
+            content: note.content || '',
+            updated: note.updated
+        })
     }, [note])
 
     /**
@@ -53,8 +56,8 @@ export default function Note({
         
         await onUpdate(noteValues)
         
-        setUpdated(new Date())
-    }, 300, [noteValues, creating])
+        setNoteValues({...noteValues, updated: new Date()})
+    }, 300, [noteValues])
 
     /**
      * react-use@useClickAway handles the onBlur event for us to account for focus and edits
@@ -65,7 +68,7 @@ export default function Note({
             await onBlur(noteValues)
         }
     });
-
+    
     return (
         <div className="min-w-full py-2" ref={componentRef}>
             <div className="rounded overflow-hidden shadow-lg bg-yellow-300 dark:bg-yellow-600 hover:bg-yellow-400" data-note-id={note.id}>
@@ -74,8 +77,8 @@ export default function Note({
                         className={`font-bold text-xl mb-2 dark:text-zinc-800 bg-transparent placeholder-zinc-700`} 
                         aria-label="Title"
                         placeholder="Title"
-                        onChange={(e) => setTitle(e.target.value || '')}
-                        value={title}
+                        onChange={(e) => setNoteValues({ ...noteValues, title: e.target.value || ''})}
+                        value={noteValues.title}
                     />
                     <input 
                         className={`text-gray-700 text-base bg-transparent placeholder-gray-600`}
@@ -83,11 +86,11 @@ export default function Note({
                         placeholder="Take a note…"
                         tabIndex={creating ? 0 : -1}
                         role="textbox"
-                        onChange={(e) => setContent(e.target.value || '')}
-                        value={content}
+                        onChange={(e) => setNoteValues({ ...noteValues, content: e.target.value || ''})}
+                        value={noteValues.content}
                     />
                 </div>
-                {!creating && <Footer updated={updated} created={note.created} />}
+                {!creating && <Footer updated={noteValues.updated} created={note.created} />}
             </div>
         </div>
     )

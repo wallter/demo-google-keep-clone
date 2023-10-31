@@ -38,11 +38,12 @@ export default function NotesPage() {
 	}
 
 	return (
-		<div className="flex flex-col">
+		<div className="w-full flex flex-col">
 			<div className="flex justify-center items-center py-5 px-2">
 				<NoteNew onCreate={handleNoteCreated} />
 			</div>
 			<div className="w-full py-5 px-2 columns-1 md:columns-2 xl:columns-4 2xl:columns-6">
+			{/* <div className="w-full py-5 px-2 columns-1 md:columns-2 xl:columns-4 2xl:columns-6"> */}
 				{notes.map((note: any) => <NoteEditable key={note.id} note={note} />)}
 			</div>
 		</div>

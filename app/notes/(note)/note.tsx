@@ -17,6 +17,8 @@ interface NoteProps {
     onBlur?: (noteValues: NoteEventProps) => Promise<void>;
 }
 
+const inputClasses = "bg-transparent"
+
 export default function Note({ 
     note, 
     creating = false, // default to false if not provided
@@ -55,40 +57,27 @@ export default function Note({
         }
     });
 
-    // not working :(
-    // // Use useEffect to update state when the note prop changes
-    // useUpdateEffect(() => {
-    //     console.log('Note updated inside Note', creating, note.id, note.title, note.content)
-    //     // Update state values when the note prop changes
-    //     setTitle(note.title);
-    //     setContent(note.content);
-    //     setUpdated(note.updated);
-    // }, [note]);
-
     return (
         <div className="min-w-full py-2" ref={componentRef}>
             <div className="rounded overflow-hidden shadow-lg bg-yellow-300 dark:bg-yellow-600 hover:bg-yellow-400" data-note-id={note.id}>
-                <div className="px-6 py-4">
-                    <div 
-                        className="placeholder font-bold text-xl mb-2 dark:text-zinc-800" 
-                        contentEditable
+                <div className="px-6 py-4 flex flex-col">
+                    <input 
+                        className={`font-bold text-xl mb-2 dark:text-zinc-800 ${inputClasses}`} 
                         suppressContentEditableWarning
                         aria-label="Title"
-                        onInput={(e) => setTitle(e.currentTarget.textContent || '')}
-                        >
-                        {note.title}
-                    </div>
-                    <div 
-                        className="placeholder text-gray-700 text-base" 
+                        onChange={(e) => setTitle(e.currentTarget.textContent || '')}
+                        value={title}
+                    />
+                    <input 
+                        className={`placeholder text-gray-700 text-base ${inputClasses}`}
                         contentEditable
                         suppressContentEditableWarning
                         aria-label="Content"
                         tabIndex={creating ? 0 : -1}
                         role="textbox"
-                        onInput={(e) => setContent(e.currentTarget.textContent || '')}
-                        >
-                        {note.content}
-                    </div>
+                        onChange={(e) => setContent(e.currentTarget.textContent || '')}
+                        value={content}
+                    />
                 </div>
                 {!creating && <Footer updated={updated} created={note.created} />}
             </div>
